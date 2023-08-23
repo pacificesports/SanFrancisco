@@ -2,7 +2,7 @@ package service
 
 import (
 	"fmt"
-	"gorm.io/driver/sqlserver"
+	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
 	"san_francisco/config"
 	"san_francisco/model"
@@ -15,8 +15,8 @@ var DB *gorm.DB
 var dbRetries = 0
 
 func InitializeDB() {
-	dsn := fmt.Sprintf("server=%s;user id=%s;password=%s;database=%s;port=%s;", config.PostgresHost, config.PostgresUser, config.PostgresPassword, config.PostgresDatabase, config.PostgresPort)
-	db, err := gorm.Open(sqlserver.Open(dsn), &gorm.Config{})
+	dsn := fmt.Sprintf("host=%s user=%s password=%s dbname=%s port=%s sslmode=disable TimeZone=UTC", config.PostgresHost, config.PostgresUser, config.PostgresPassword, config.PostgresDatabase, config.PostgresPort)
+	db, err := gorm.Open(postgres.Open(dsn), &gorm.Config{})
 	if err != nil {
 		if dbRetries < 15 {
 			dbRetries++
