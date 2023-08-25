@@ -67,7 +67,7 @@ func ResponseLogger() gin.HandlerFunc {
 
 func SanFranciscoRoutes() gin.HandlerFunc {
 	return func(c *gin.Context) {
-		if c.Request.URL.String() == "/sf/ping" {
+		if c.Request.URL.String() == "/sanfrancisco/ping" {
 			startTime, _ := c.Get("startTime")
 			Ping(c)
 			c.AbortWithStatusJSON(200, model.Response{
