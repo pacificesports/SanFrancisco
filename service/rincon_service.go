@@ -29,7 +29,7 @@ func RegisterRincon() {
 	var ContainerAppEnvDNSSuffix = os.Getenv("CONTAINER_APP_ENV_DNS_SUFFIX")
 	if ContainerAppEnvDNSSuffix != "" {
 		utils.SugarLogger.Infoln("Found Azure Container App environment variables, using internal DNS suffix: " + ContainerAppEnvDNSSuffix)
-		rinconHost = "http://rincon.internal" + ContainerAppEnvDNSSuffix
+		rinconHost = "http://rincon.internal." + ContainerAppEnvDNSSuffix
 		rinconBody, _ = json.Marshal(map[string]interface{}{
 			"name":         "SanFrancisco",
 			"version":      config.Version,
