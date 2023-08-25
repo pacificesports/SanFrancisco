@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"encoding/json"
 	"net/http"
+	"os"
 	"san_francisco/config"
 	"san_francisco/model"
 	"san_francisco/utils"
@@ -13,7 +14,7 @@ import (
 )
 
 var rinconRetries = 0
-var rinconHost = "http://rincon"
+var rinconHost = "http://rincon" + ":" + config.RinconPort
 
 func RegisterRincon() {
 	var portInt, _ = strconv.Atoi(config.Port)
@@ -24,16 +25,30 @@ func RegisterRincon() {
 		"port":         portInt,
 		"status_email": config.StatusEmail,
 	})
+	// Azure Container App deployment
+	var ContainerAppEnvDNSSuffix = os.Getenv("CONTAINER_APP_ENV_DNS_SUFFIX")
+	if ContainerAppEnvDNSSuffix != "" {
+		utils.SugarLogger.Infoln("Found Azure Container App environment variables, using internal DNS suffix: " + ContainerAppEnvDNSSuffix)
+		rinconHost = "http://rincon.internal" + ContainerAppEnvDNSSuffix
+		rinconBody, _ = json.Marshal(map[string]interface{}{
+			"name":         "SanFrancisco",
+			"version":      config.Version,
+			"url":          "http://sanfrancisco." + ContainerAppEnvDNSSuffix,
+			"port":         portInt,
+			"status_email": config.StatusEmail,
+		})
+	}
+
 	responseBody := bytes.NewBuffer(rinconBody)
-	res, err := http.Post(rinconHost+":"+config.RinconPort+"/services", "application/json", responseBody)
+	res, err := http.Post(rinconHost+"/services", "application/json", responseBody)
 	if err != nil {
 		if rinconRetries < 15 {
 			rinconRetries++
 			if rinconRetries%2 == 0 {
-				rinconHost = "http://localhost"
+				rinconHost = "http://localhost" + ":" + config.RinconPort
 				utils.SugarLogger.Errorln("failed to register with rincon, retrying with \"http://localhost\" in 5s...")
 			} else {
-				rinconHost = "http://rincon"
+				rinconHost = "http://rincon" + ":" + config.RinconPort
 				utils.SugarLogger.Errorln("failed to register with rincon, retrying with \"http://rincon\" in 5s...")
 			}
 			time.Sleep(time.Second * 5)
@@ -58,7 +73,7 @@ func RegisterRinconRoute(route string) {
 		"service_name": "SanFrancisco",
 	})
 	responseBody := bytes.NewBuffer(rinconBody)
-	_, err := http.Post(rinconHost+":"+config.RinconPort+"/routes", "application/json", responseBody)
+	_, err := http.Post(rinconHost+"/routes", "application/json", responseBody)
 	if err != nil {
 	}
 	utils.SugarLogger.Infoln("Registered route " + route)
@@ -67,7 +82,7 @@ func RegisterRinconRoute(route string) {
 func GetRinconServiceInfo() {
 	var service model.Service
 	rinconClient := http.Client{}
-	req, _ := http.NewRequest("GET", rinconHost+":"+config.RinconPort+"/routes/match/rincon", nil)
+	req, _ := http.NewRequest("GET", rinconHost+"/routes/match/rincon", nil)
 	res, err := rinconClient.Do(req)
 	if err != nil {
 		utils.SugarLogger.Errorln(err.Error())
@@ -83,7 +98,7 @@ func MatchRoute(traceparent string, route string, requestID string) model.Servic
 	var service model.Service
 	queryRoute := strings.ReplaceAll(route, "/", "<->")
 	rinconClient := http.Client{}
-	req, _ := http.NewRequest("GET", rinconHost+":"+config.RinconPort+"/routes/match/"+queryRoute, nil)
+	req, _ := http.NewRequest("GET", rinconHost+"/routes/match/"+queryRoute, nil)
 	req.Header.Set("Request-ID", requestID)
 	req.Header.Set("traceparent", traceparent)
 	req.Header.Add("Content-Type", "application/json")
