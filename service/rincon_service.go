@@ -42,6 +42,7 @@ func RegisterRincon() {
 	responseBody := bytes.NewBuffer(rinconBody)
 	res, err := http.Post(rinconHost+"/services", "application/json", responseBody)
 	if err != nil {
+		utils.SugarLogger.Errorln(err.Error())
 		if rinconRetries < 15 {
 			rinconRetries++
 			if rinconRetries%2 == 0 {
@@ -62,7 +63,7 @@ func RegisterRincon() {
 			json.NewDecoder(res.Body).Decode(&config.Service)
 		}
 		utils.SugarLogger.Infoln("Registered service with Rincon! Service ID: " + strconv.Itoa(config.Service.ID))
-		RegisterRinconRoute("/sf")
+		RegisterRinconRoute("/sanfrancisco")
 		GetRinconServiceInfo()
 	}
 }
@@ -75,6 +76,7 @@ func RegisterRinconRoute(route string) {
 	responseBody := bytes.NewBuffer(rinconBody)
 	_, err := http.Post(rinconHost+"/routes", "application/json", responseBody)
 	if err != nil {
+		utils.SugarLogger.Errorln(err.Error())
 	}
 	utils.SugarLogger.Infoln("Registered route " + route)
 }
@@ -91,6 +93,7 @@ func GetRinconServiceInfo() {
 	if res.StatusCode == 200 {
 		json.NewDecoder(res.Body).Decode(&service)
 	}
+
 	config.RinconService = service
 }
 
