@@ -61,6 +61,19 @@ func RegisterRincon() {
 		defer res.Body.Close()
 		if res.StatusCode == 200 {
 			json.NewDecoder(res.Body).Decode(&config.Service)
+			println("===========================================")
+			println("service info: " + config.Service.Name + " v" + config.Service.Version)
+			println("service info: " + config.Service.URL)
+			println()
+		} else {
+			utils.SugarLogger.Errorln("Failed to register with Rincon! Status code: " + strconv.Itoa(res.StatusCode))
+			// print body
+			buf := new(bytes.Buffer)
+			buf.ReadFrom(res.Body)
+			newStr := buf.String()
+			println("===========================================")
+			println(newStr)
+			println()
 		}
 		utils.SugarLogger.Infoln("Registered service with Rincon! Service ID: " + strconv.Itoa(config.Service.ID))
 		RegisterRinconRoute("/sanfrancisco")
@@ -93,7 +106,10 @@ func GetRinconServiceInfo() {
 	if res.StatusCode == 200 {
 		json.NewDecoder(res.Body).Decode(&service)
 	}
-
+	println("===========================================")
+	println("Rincon service info: " + service.Name + " v" + service.Version)
+	println("Rincon service info: " + service.URL)
+	println()
 	config.RinconService = service
 }
 
