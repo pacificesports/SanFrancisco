@@ -67,13 +67,6 @@ func RegisterRincon() {
 			println()
 		} else {
 			utils.SugarLogger.Errorln("Failed to register with Rincon! Status code: " + strconv.Itoa(res.StatusCode))
-			// print body
-			buf := new(bytes.Buffer)
-			buf.ReadFrom(res.Body)
-			newStr := buf.String()
-			println("===========================================")
-			println(newStr)
-			println()
 		}
 		utils.SugarLogger.Infoln("Registered service with Rincon! Service ID: " + strconv.Itoa(config.Service.ID))
 		RegisterRinconRoute("/sanfrancisco")

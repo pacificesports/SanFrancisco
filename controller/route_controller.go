@@ -88,6 +88,7 @@ func APIKeyChecker() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		if strings.HasSuffix(c.Request.URL.String(), "/ping") {
 			c.Next()
+			return
 		}
 
 		apiKey := service.VerifyAPIKey(c.GetHeader("PEL-API-KEY"))
