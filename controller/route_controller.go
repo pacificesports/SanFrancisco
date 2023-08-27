@@ -68,16 +68,7 @@ func ResponseLogger() gin.HandlerFunc {
 func SanFranciscoRoutes() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		if c.Request.URL.String() == "/sanfrancisco/ping" {
-			startTime, _ := c.Get("startTime")
 			Ping(c)
-			c.AbortWithStatusJSON(200, model.Response{
-				Status:    "ERROR",
-				Ping:      strconv.FormatInt(time.Now().Sub(startTime.(time.Time)).Milliseconds(), 10) + "ms",
-				Gateway:   "SanFrancisco v" + config.Version,
-				Service:   "SanFrancisco v" + config.Version,
-				Timestamp: time.Now().Format("Mon Jan 02 15:04:05 MST 2006"),
-				Data:      json.RawMessage("{\"message\": \"SanFrancisco v" + config.Version + " is online!\"}"),
-			})
 			return
 		}
 		c.Next()
