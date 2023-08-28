@@ -3,20 +3,13 @@ package controller
 import (
 	"encoding/json"
 	"github.com/gin-gonic/gin"
-	"go.opentelemetry.io/otel/attribute"
-	oteltrace "go.opentelemetry.io/otel/trace"
 	"san_francisco/config"
 	"san_francisco/model"
-	"san_francisco/utils"
 	"strconv"
 	"time"
 )
 
 func Ping(c *gin.Context) {
-	// Start tracing span
-	span := utils.BuildSpan(c.Request.Context(), "Ping", oteltrace.WithAttributes(attribute.Key("Request-ID").String(c.GetHeader("Request-ID"))))
-	defer span.End()
-
 	startTime, _ := c.Get("startTime")
 	c.AbortWithStatusJSON(200, model.Response{
 		Status:    "SUCCESS",

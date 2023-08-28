@@ -82,15 +82,14 @@ func GetRinconServiceInfo() {
 		json.NewDecoder(res.Body).Decode(&service)
 	}
 	config.RinconService = service
-}
 
-func MatchRoute(traceparent string, route string, requestID string) model.Service {
+}
+func MatchRoute(route string, requestID string) model.Service {
 	var service model.Service
 	queryRoute := strings.ReplaceAll(route, "/", "<->")
 	rinconClient := http.Client{}
 	req, _ := http.NewRequest("GET", rinconHost+"/routes/match/"+queryRoute, nil)
 	req.Header.Set("Request-ID", requestID)
-	req.Header.Set("traceparent", traceparent)
 	req.Header.Add("Content-Type", "application/json")
 	res, err := rinconClient.Do(req)
 	if err != nil {

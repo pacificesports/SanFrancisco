@@ -3,10 +3,14 @@ package service
 import (
 	"san_francisco/config"
 	"san_francisco/model"
+	"san_francisco/utils"
 	"strings"
 )
 
 func GetAllAPIKeys() []model.APIKey {
+	txn := utils.NewRelicApp.StartTransaction("GetAllAPIKeys")
+	defer txn.End()
+
 	var apiKeys []model.APIKey
 	DB.Find(&apiKeys)
 	config.APIKeys = apiKeys

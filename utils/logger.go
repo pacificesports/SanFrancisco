@@ -9,9 +9,9 @@ var Logger *zap.Logger
 var SugarLogger *zap.SugaredLogger
 
 func InitializeLogger() {
-	Logger = zap.Must(zap.NewProduction())
-	if config.Env == "DEV" {
-		Logger = zap.Must(zap.NewDevelopment())
+	Logger = zap.Must(zap.NewDevelopment())
+	if config.Env == "PROD" {
+		Logger = zap.Must(zap.NewProduction())
 	}
 	SugarLogger = Logger.Sugar()
 }

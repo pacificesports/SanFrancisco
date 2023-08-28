@@ -15,11 +15,10 @@ var Service = model.Service{
 
 var RinconService = model.Service{}
 
-var Version = "2.3.0"
+var Version = "2.3.1"
 var Env = os.Getenv("ENV")
 var Port = os.Getenv("PORT")
 var RinconPort = os.Getenv("RINCON_PORT")
-var JaegerPort = os.Getenv("JAEGER_PORT")
 
 var PostgresHost = os.Getenv("POSTGRES_HOST")
 var PostgresDatabase = os.Getenv("POSTGRES_DATABASE")

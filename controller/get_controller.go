@@ -3,8 +3,6 @@ package controller
 import (
 	"encoding/json"
 	"github.com/gin-gonic/gin"
-	"go.opentelemetry.io/otel/attribute"
-	oteltrace "go.opentelemetry.io/otel/trace"
 	"io"
 	"net/http"
 	"san_francisco/config"
@@ -20,11 +18,8 @@ func GetProxy(c *gin.Context) {
 	startTime, _ := c.Get("startTime")
 	requestID := c.GetHeader("Request-ID")
 	c.Header("Request-ID", requestID)
-	// Start tracing span
-	span := utils.BuildSpan(c.Request.Context(), "[GET] "+c.Request.URL.String(), oteltrace.WithAttributes(attribute.Key("Request-ID").String(requestID)))
-	defer span.End()
 	// Get service to handle route
-	mappedService := service.MatchRoute(utils.BuildTraceparent(span), strings.TrimLeft(c.Request.URL.String(), "/"), requestID)
+	mappedService := service.MatchRoute(strings.TrimLeft(c.Request.URL.String(), "/"), requestID)
 	if mappedService.ID != 0 {
 		if strings.HasSuffix(c.Request.URL.String(), "/ping") || service.VerifyAPIKeyScopes(c.Request.Header.Get("PEL-API-KEY"), mappedService, c.Request.Method) {
 			utils.SugarLogger.Infoln("PROXY TO: (" + strconv.Itoa(mappedService.ID) + ") " + mappedService.Name + " @ " + mappedService.URL)
@@ -33,13 +28,11 @@ func GetProxy(c *gin.Context) {
 			proxyRequest, _ := http.NewRequest("GET", mappedService.URL+c.Request.URL.String(), nil)
 			//Transfer headers to proxy request
 			proxyRequest.Header.Set("Request-ID", requestID)
-			proxyRequest.Header.Set("traceparent", utils.BuildTraceparent(span))
 			for header, values := range c.Request.Header {
 				for _, value := range values {
 					proxyRequest.Header.Add(header, value)
 				}
 			}
-			proxyRequest = proxyRequest.WithContext(oteltrace.ContextWithSpan(c.Request.Context(), span))
 			// Proxy the actual request
 			proxyResponse, err := proxyClient.Do(proxyRequest)
 			if err != nil {
