@@ -84,6 +84,7 @@ func GetRinconServiceInfo() {
 	config.RinconService = service
 
 }
+
 func MatchRoute(route string, requestID string) model.Service {
 	var service model.Service
 	queryRoute := strings.ReplaceAll(route, "/", "<->")

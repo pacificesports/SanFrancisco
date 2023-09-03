@@ -15,7 +15,7 @@ var Service = model.Service{
 
 var RinconService = model.Service{}
 
-var Version = "2.3.1"
+var Version = "2.4.0"
 var Env = os.Getenv("ENV")
 var Port = os.Getenv("PORT")
 var RinconPort = os.Getenv("RINCON_PORT")
@@ -30,6 +30,7 @@ var DiscordToken = os.Getenv("DISCORD_TOKEN")
 var DiscordGuild = os.Getenv("DISCORD_GUILD")
 var DiscordChannel = os.Getenv("DISCORD_CHANNEL")
 
+var FirebaseProjectID = os.Getenv("FIREBASE_PROJECT_ID")
 var FirebaseServiceAccountEncoded = os.Getenv("FIREBASE_SERVICE_ACCOUNT")
 
 var APIKeys []model.APIKey
