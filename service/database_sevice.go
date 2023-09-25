@@ -33,3 +33,11 @@ func InitializeDB() {
 		DB = db
 	}
 }
+
+func GetUsernameFromID(userID string) string {
+	var username string
+	result := DB.Table("user_connection").Where("user_id = ? AND id = ?", userID, "discord_username").Select("connection").Row().Scan(&username)
+	if result != nil {
+	}
+	return username
+}

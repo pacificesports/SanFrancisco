@@ -24,8 +24,8 @@ func RegisterRincon() {
 	ContainerAppEnvDNSSuffix := os.Getenv("CONTAINER_APP_ENV_DNS_SUFFIX")
 	if ContainerAppEnvDNSSuffix != "" {
 		utils.SugarLogger.Infoln("Detected Azure Container App deployment, using environment dns suffix: " + ContainerAppEnvDNSSuffix)
-		config.Service.URL = "http://" + strings.ToLower(config.Service.Name) + "." + ContainerAppEnvDNSSuffix
-		rinconHost = "http://rincon.internal." + ContainerAppEnvDNSSuffix
+		config.Service.URL = "http://" + strings.ToLower(config.Service.Name) + "-" + strings.ToLower(config.Env) + "." + ContainerAppEnvDNSSuffix
+		rinconHost = "http://rincon-" + strings.ToLower(config.Env) + ".internal." + ContainerAppEnvDNSSuffix
 	}
 
 	utils.SugarLogger.Infoln("Attempting to register service with Rincon @ " + rinconHost + "/services")
